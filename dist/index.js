@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const eventloop_1 = __importDefault(require("./event/eventloop"));
 const worker_threads_1 = require("worker_threads");
 const sharedBankV2_1 = __importDefault(require("./thread/sharedBankV2"));
 // eventloop();
@@ -38,5 +39,10 @@ const sharedBank = new sharedBankV2_1.default(buffer, 1000000);
 workerThread1.postMessage(buffer);
 workerThread2.postMessage(buffer);
 setTimeout(() => {
-    console.log(`워커 스레드의 결과는 0이여야 한다, 하지만 결과는 ${sharedBank.getBalance()}`);
+    console.log(`워커 스레드의 결과는 0이여야 한다, 결과는 ${sharedBank.getBalance()}`);
+    // 종료 스레드는 -1
+    // 만들어진 순서대로 1,2 .. 인듯
+    console.log(`workerthread1Id : ${workerThread1.threadId}`);
+    console.log(`workerthread2Id : ${workerThread2.threadId}`);
+    (0, eventloop_1.default)();
 }, 2000);

@@ -11,6 +11,7 @@ const eventloop = () => {
         console.log(result);
     });
     console.log(4);
+    process.nextTick(() => console.log(5));
 };
 // result 2 4 3 1
 // nodejs의 eventloop는 async promise가 들어가는 마이크로 태스크 큐가 최상위

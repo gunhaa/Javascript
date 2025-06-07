@@ -55,4 +55,9 @@ setTimeout(() => {
   console.log(
     `워커 스레드의 결과는 0이여야 한다, 결과는 ${sharedBank.getBalance()}`
   );
+  // 종료 스레드는 -1
+  // 만들어진 순서대로 1,2 .. 인듯
+  console.log(`workerthread1Id : ${workerThread1.threadId}`);
+  console.log(`workerthread2Id : ${workerThread2.threadId}`);
+  eventloop();
 }, 2000);

@@ -20,6 +20,6 @@ if (!worker_threads_1.isMainThread) {
             const sharedBank = new sharedBankV2_1.default(buffer);
             sharedBank.withdraw(1000);
         }
-        worker_threads_1.parentPort.close();
+        // parentPort!.close();
     });
 }
