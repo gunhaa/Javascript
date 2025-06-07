@@ -4,6 +4,7 @@ import { cpuBound, ioBound } from "./await/await";
 import { isMainThread, Worker } from "worker_threads";
 import { badBank } from "./thread/badBank";
 import SharedBankV1 from "./thread/sharedBankV1";
+import SharedBankV2 from "./thread/sharedBankV2";
 
 // eventloop();
 // dataLoader();
@@ -44,13 +45,14 @@ const workerThread2 = new Worker("./dist/thread/producer.worker.js");
 
 const buffer = new SharedArrayBuffer(4);
 
-const sharedBank = new SharedBankV1(buffer, 10000);
+// const sharedBank = new SharedBankV1(buffer, 1000000);
+const sharedBank = new SharedBankV2(buffer, 1000000);
 
 workerThread1.postMessage(buffer);
 workerThread2.postMessage(buffer);
 
 setTimeout(() => {
   console.log(
-    `워커 스레드의 결과는 0이여야 한다, 하지만 결과는 ${sharedBank.getBalance()}`
+    `워커 스레드의 결과는 0이여야 한다, 결과는 ${sharedBank.getBalance()}`
   );
 }, 2000);

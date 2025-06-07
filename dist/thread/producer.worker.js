@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
-const bank_shared_1 = __importDefault(require("./bank.shared"));
+const sharedBankV2_1 = __importDefault(require("./sharedBankV2"));
 // if (!isMainThread) {
 //   parentPort!.on("message", value => {
 //     console.log(`부모가 보냄: ${value}`);
@@ -14,10 +14,12 @@ const bank_shared_1 = __importDefault(require("./bank.shared"));
 // }
 if (!worker_threads_1.isMainThread) {
     worker_threads_1.parentPort.on("message", (buffer) => {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 500; i++) {
             // badBank.withdraw(1000);
-            const sharedBank = new bank_shared_1.default(buffer);
+            // const sharedBank = new SharedBankV1(buffer);
+            const sharedBank = new sharedBankV2_1.default(buffer);
             sharedBank.withdraw(1000);
         }
+        worker_threads_1.parentPort.close();
     });
 }

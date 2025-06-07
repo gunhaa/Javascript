@@ -1,7 +1,4 @@
-export default class SharedBankV1 {
-  
-  // 메모리는 공유되지만 동시성 이슈 발생
-
+export default class SharedBankV2 {
   private balanceView: Uint32Array;
 
   constructor(buffer: SharedArrayBuffer);
@@ -16,13 +13,24 @@ export default class SharedBankV1 {
   }
 
   public withdraw(value: number): number {
-    if (this.balanceView[0] < value) {
-      throw new Error("잔고보다 많은 출금 요청 발생");
-    }
-    console.log(`withdraw 실행 : ${this.balanceView[0]}`);
+    let oldValue: number;
+    let newValue: number;
+    do {
+      oldValue = Atomics.load(this.balanceView, 0);
 
-    this.balanceView[0] = this.balanceView[0] - value;
-    return this.balanceView[0];
+      if (oldValue < value) {
+        throw new Error("잔고보다 많은 출금 요청 발생");
+      }
+
+      newValue = oldValue - value;
+      // oldValue일 때만 newValue로 변경 (CAS)
+    } while (
+      Atomics.compareExchange(this.balanceView, 0, oldValue, newValue) ===
+      newValue
+    );
+
+    console.log(`withdraw 실행 후 잔고: ${newValue}`);
+    return newValue;
   }
 
   public deposit(value: number): number {
@@ -34,4 +42,3 @@ export default class SharedBankV1 {
     return this.balanceView[0];
   }
 }
-

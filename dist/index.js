@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const worker_threads_1 = require("worker_threads");
-const bank_shared_1 = __importDefault(require("./thread/bank.shared"));
+const sharedBankV2_1 = __importDefault(require("./thread/sharedBankV2"));
 // eventloop();
 // dataLoader();
 // const main = async () => {
@@ -33,7 +33,8 @@ const bank_shared_1 = __importDefault(require("./thread/bank.shared"));
 const workerThread1 = new worker_threads_1.Worker("./dist/thread/producer.worker.js");
 const workerThread2 = new worker_threads_1.Worker("./dist/thread/producer.worker.js");
 const buffer = new SharedArrayBuffer(4);
-const sharedBank = new bank_shared_1.default(buffer, 10000);
+// const sharedBank = new SharedBankV1(buffer, 1000000);
+const sharedBank = new sharedBankV2_1.default(buffer, 1000000);
 workerThread1.postMessage(buffer);
 workerThread2.postMessage(buffer);
 setTimeout(() => {
