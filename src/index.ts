@@ -1,7 +1,9 @@
 import eventloop from "./event/eventloop";
 import dataLoader from "./event/dataLoader";
 import { cpuBound, ioBound } from "./await/await";
-import { Worker } from "worker_threads";
+import { isMainThread, Worker } from "worker_threads";
+import { badBank } from "./thread/badBank";
+import SharedBankV1 from "./thread/sharedBankV1";
 
 // eventloop();
 // dataLoader();
@@ -17,14 +19,38 @@ import { Worker } from "worker_threads";
 
 // main();
 
-const workerThread = new Worker("./dist/thread/producer.worker.js");
+// console.log(`isMainThread? : ${isMainThread}`);
 
-workerThread.on("message", (value) => {
-  console.log(`자식이 보냄: ${value}`);
-});
+// const workerThread = new Worker("./dist/thread/producer.worker.js");
 
-workerThread.on("exit", (_) => {
-  console.log("자식 스레드 parentPort.close() 호출, 자식 스레드 종료");
-});
+// workerThread.on("message", (value) => {
+//   console.log(`자식이 보냄: ${value}`);
+// });
 
-workerThread.postMessage("ping");
+// workerThread.on("exit", (_) => {
+//   console.log("자식 스레드 parentPort.close() 호출, 자식 스레드 종료");
+// });
+
+// workerThread.postMessage("ping");
+
+// try {
+//   badBank.withdraw(12000);
+// } catch (e) {
+//   console.log(`에러가 발생함: ${e}`);
+// }
+
+const workerThread1 = new Worker("./dist/thread/producer.worker.js");
+const workerThread2 = new Worker("./dist/thread/producer.worker.js");
+
+const buffer = new SharedArrayBuffer(4);
+
+const sharedBank = new SharedBankV1(buffer, 10000);
+
+workerThread1.postMessage(buffer);
+workerThread2.postMessage(buffer);
+
+setTimeout(() => {
+  console.log(
+    `워커 스레드의 결과는 0이여야 한다, 하지만 결과는 ${sharedBank.getBalance()}`
+  );
+}, 2000);
